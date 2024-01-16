@@ -1,8 +1,8 @@
-﻿using Meadow.Foundation;
+﻿using Meadow;
 using Meadow.Foundation.Graphics;
 using Meadow.Foundation.Graphics.MicroLayout;
 
-namespace Varistor;
+namespace VaristorDisplay;
 
 internal class RheostatControl : AbsoluteLayout
 {
@@ -16,6 +16,7 @@ internal class RheostatControl : AbsoluteLayout
     private double? _displayValue;
 
     public Color FocusedColor => Color.DarkOliveGreen;
+    public Color UnfocusedColor => Color.FromRgb(0x26, 0x30, 0x15);
     public Color ValueColor => Color.OrangeRed;
     public Color ValueBackgroundColor => Color.FromRgb(50, 50, 50);
 
@@ -25,7 +26,7 @@ internal class RheostatControl : AbsoluteLayout
         set
         {
             _focused = value;
-            this.BackgroundColor = _focused ? FocusedColor : Color.Transparent;
+            this.BackgroundColor = _focused ? FocusedColor : UnfocusedColor;
         }
     }
 
@@ -58,7 +59,7 @@ internal class RheostatControl : AbsoluteLayout
     {
         _font = font;
 
-        this.BackgroundColor = _focused ? FocusedColor : Color.Transparent;
+        this.BackgroundColor = _focused ? FocusedColor : UnfocusedColor;
 
         _progressBar = new ProgressBar(LabelWidth + Margin + 2, Margin, width - LabelWidth - Margin * 3, height - Margin * 2)
         {

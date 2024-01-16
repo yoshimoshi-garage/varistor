@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace Varistor;
+namespace VaristorDisplay;
 
 public interface IInputService
 {
-    event EventHandler SmallIncreaseRequested;
-    event EventHandler LargeIncreaseRequested;
-    event EventHandler SmallDecreaseRequested;
-    event EventHandler LargeDecreaseRequested;
+    event EventHandler IncreaseRequested;
+    event EventHandler DecreaseRequested;
+    event EventHandler PreviousStatRequested;
+    event EventHandler NextStatRequested;
 }

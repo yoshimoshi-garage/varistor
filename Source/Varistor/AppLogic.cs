@@ -1,18 +1,20 @@
 ﻿using Meadow.Hardware;
 using Meadow.Units;
 using System;
-using System.Linq;
 
-namespace Varistor;
+namespace VaristorDisplay;
 
 public class AppLogic
 {
     private readonly Resistance StepAmount = 50.0d.Ohms();
 
+    private int _selectedIndex = 0;
+
+
     private IVaristorHardware Hardware { get; }
     private IDisplayService Display { get; }
     private IInputService Inputs { get; }
-    private IRheostat SeletedRheostat { get; set; }
+    private IRheostat SeletedRheostat => Hardware.GetRheostats()[_selectedIndex];
 
     public AppLogic(IVaristorHardware hardware, IDisplayService display, IInputService inputService)
     {
@@ -20,32 +22,50 @@ public class AppLogic
         Display = display;
         Inputs = inputService;
 
-        // TODO: support multiple rheostats in the HMI
-        SeletedRheostat = Hardware.GetRheostats().First();
+        var stats = Hardware.GetRheostats();
 
-        Display.UpdateRheostat(0, SeletedRheostat);
+        Display.UpdateRheostat(0, stats[0]);
+        Display.UpdateRheostat(1, stats[1]);
 
-        Inputs.SmallIncreaseRequested += OnSmallIncreaseRequested;
-        Inputs.SmallDecreaseRequested += OnSmallDecreaseRequested;
+        Inputs.IncreaseRequested += OnIncreaseRequested;
+        Inputs.DecreaseRequested += OnDecreaseRequested;
+        Inputs.PreviousStatRequested += OnPreviousStatRequested;
+        Inputs.NextStatRequested += OnNextStatRequested;
     }
 
-    private void OnSmallDecreaseRequested(object sender, EventArgs e)
+    private void OnNextStatRequested(object sender, EventArgs e)
     {
-        if (SeletedRheostat.Resistance <= Resistance.Zero) return;
+        if (_selectedIndex == Hardware.GetRheostats().Length - 1) return;
+        _selectedIndex++;
+        Display.SelectRheostat(_selectedIndex);
+    }
+
+    private void OnPreviousStatRequested(object sender, EventArgs e)
+    {
+        if (_selectedIndex == 0) return;
+        _selectedIndex--;
+        Display.SelectRheostat(_selectedIndex);
+    }
+
+    private Resistance _zero = new Resistance(0);
+
+    private void OnDecreaseRequested(object sender, EventArgs e)
+    {
+        if (SeletedRheostat.Resistance <= _zero) return;
 
         var current = SeletedRheostat.Resistance;
         var target = current - StepAmount;
-        if (target < Resistance.Zero)
+        if (target < _zero)
         {
-            target = Resistance.Zero;
+            target = _zero;
         }
 
         SeletedRheostat.Resistance = target;
 
-        Display.UpdateRheostat(0, SeletedRheostat);
+        Display.UpdateRheostat(_selectedIndex, SeletedRheostat);
     }
 
-    private void OnSmallIncreaseRequested(object sender, EventArgs e)
+    private void OnIncreaseRequested(object sender, EventArgs e)
     {
         if (SeletedRheostat.Resistance >= SeletedRheostat.MaxResistance) return;
 
@@ -58,6 +78,6 @@ public class AppLogic
 
         SeletedRheostat.Resistance = target;
 
-        Display.UpdateRheostat(0, SeletedRheostat);
+        Display.UpdateRheostat(_selectedIndex, SeletedRheostat);
     }
 }

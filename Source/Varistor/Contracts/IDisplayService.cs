@@ -1,10 +1,10 @@
 ﻿using Meadow.Hardware;
 
-namespace Varistor;
+namespace VaristorDisplay;
 
 public interface IDisplayService
 {
-    void Initialize(int rheostatCount);
     void Update();
     void UpdateRheostat(int index, IRheostat rheostat);
+    void SelectRheostat(int index);
 }

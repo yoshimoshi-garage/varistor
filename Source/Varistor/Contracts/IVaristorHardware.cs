@@ -1,7 +1,7 @@
 ﻿using Meadow.Foundation.Graphics;
 using Meadow.Hardware;
 
-namespace Varistor;
+namespace VaristorDisplay;
 
 public interface IVaristorHardware
 {
