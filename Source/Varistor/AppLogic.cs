@@ -47,17 +47,15 @@ public class AppLogic
         Display.SelectRheostat(_selectedIndex);
     }
 
-    private Resistance _zero = new Resistance(0);
-
     private void OnDecreaseRequested(object sender, EventArgs e)
     {
-        if (SeletedRheostat.Resistance <= _zero) return;
+        if (SeletedRheostat.Resistance <= Resistance.Zero) return;
 
         var current = SeletedRheostat.Resistance;
         var target = current - StepAmount;
-        if (target < _zero)
+        if (target < Resistance.Zero)
         {
-            target = _zero;
+            target = Resistance.Zero;
         }
 
         SeletedRheostat.Resistance = target;
